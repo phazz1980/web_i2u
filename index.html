@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ino2ubi — конвертер Arduino в блоки FLProg</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app">
+    <header class="header">
+      <h1>ino2ubi</h1>
+      <p class="tagline">Конвертер Arduino (.ino) в пользовательские блоки FLProg (.ubi)</p>
+      <p class="version">Версия <span id="versionSpan">—</span> (работает в браузере, без сервера)</p>
+    </header>
+
+    <main class="main">
+      <section class="panel code-panel">
+        <div class="panel-head">
+          <h2>Код Arduino</h2>
+          <div class="actions">
+            <input type="file" id="fileIno" accept=".ino,.txt" hidden>
+            <button type="button" id="btnLoad" class="btn btn-secondary">Загрузить .ino</button>
+            <button type="button" id="btnClear" class="btn btn-secondary">Очистить</button>
+            <button type="button" id="btnParse" class="btn btn-primary">Парсить код</button>
+          </div>
+        </div>
+        <textarea id="codeInput" class="code-input" placeholder="Вставьте или загрузите Arduino-скетч (setup, loop, переменные, функции)…"></textarea>
+      </section>
+
+      <section class="panel right-panel">
+        <div class="tabs">
+          <button type="button" class="tab active" data-tab="variables">Переменные</button>
+          <button type="button" class="tab" data-tab="functions">Функции</button>
+        </div>
+
+        <div id="tabVariables" class="tab-content active">
+          <p class="hint">Найденные переменные и #define. Двойной клик по строке — редактирование.</p>
+          <div class="table-wrap">
+            <table class="data-table" id="varTable">
+              <thead>
+                <tr>
+                  <th>Имя</th>
+                  <th>Тип</th>
+                  <th>Роль</th>
+                  <th>Псевдоним</th>
+                  <th>По умолчанию</th>
+                </tr>
+              </thead>
+              <tbody id="varBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div id="tabFunctions" class="tab-content">
+          <p class="hint">Найденные пользовательские функции. Двойной клик — редактирование тела.</p>
+          <div class="table-wrap">
+            <table class="data-table" id="funcTable">
+              <thead>
+                <tr>
+                  <th>Имя</th>
+                  <th>Возврат</th>
+                  <th>Параметры</th>
+                  <th>Тело</th>
+                </tr>
+              </thead>
+              <tbody id="funcBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="settings">
+          <h3>Настройки блока</h3>
+          <div class="field">
+            <label for="blockName">Название блока</label>
+            <input type="text" id="blockName" value="Custom Block" placeholder="Имя блока в FLProg">
+          </div>
+          <div class="field">
+            <label for="blockDesc">Описание блока</label>
+            <textarea id="blockDesc" rows="3" placeholder="Описание (подсказка в FLProg)">Автоматически сгенерированный блок</textarea>
+          </div>
+          <div class="field checkbox-field">
+            <input type="checkbox" id="enableInput" value="1">
+            <label for="enableInput">Вход En (условие выполнения кода в Loop: if(En))</label>
+          </div>
+        </div>
+
+        <button type="button" id="btnGenerate" class="btn btn-accent btn-block">Сгенерировать .ubi и скачать</button>
+        <p id="status" class="status"></p>
+      </section>
+    </main>
+  </div>
+
+  <div id="modalEdit" class="modal" hidden>
+    <div class="modal-backdrop"></div>
+    <div class="modal-box">
+      <h3 id="modalEditTitle">Редактирование</h3>
+      <div id="modalEditBody"></div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-secondary" id="modalCancel">Отмена</button>
+        <button type="button" class="btn btn-primary" id="modalSave">Сохранить</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="constants.js"></script>
+  <script src="parser.js"></script>
+  <script src="generator.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

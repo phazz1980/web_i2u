@@ -1,0 +1,98 @@
+/* ino2ubi Web — стили (GitHub Pages) */
+
+:root {
+  --bg: #0f1419;
+  --surface: #1a2332;
+  --surface2: #243044;
+  --border: #2d3d52;
+  --text: #e6edf3;
+  --text-muted: #8b9eb5;
+  --accent: #3b82f6;
+  --accent-hover: #2563eb;
+  --primary: #22c55e;
+  --primary-hover: #16a34a;
+  --danger: #ef4444;
+  --font: "JetBrains Mono", "Fira Code", "Consolas", monospace;
+  --font-ui: "Inter", "Segoe UI", system-ui, sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-ui);
+  font-size: 14px;
+  line-height: 1.5;
+  min-height: 100vh;
+}
+
+.app { max-width: 1600px; margin: 0 auto; padding: 1rem 1.5rem 2rem; }
+
+.header { text-align: center; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border); }
+.header h1 { font-family: var(--font); font-size: 1.75rem; font-weight: 700; margin: 0 0 0.25rem; color: var(--text); letter-spacing: 0.02em; }
+.tagline { color: var(--text-muted); margin: 0 0 0.25rem; font-size: 0.95rem; }
+.version { color: var(--text-muted); font-size: 0.8rem; margin: 0; }
+
+.main { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; align-items: start; }
+@media (max-width: 1000px) { .main { grid-template-columns: 1fr; } }
+
+.panel { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+.panel-head { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem; padding: 0.75rem 1rem; background: var(--surface2); border-bottom: 1px solid var(--border); }
+.panel-head h2 { margin: 0; font-size: 1rem; font-weight: 600; }
+.actions { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+
+.btn { font-family: var(--font-ui); font-size: 0.875rem; padding: 0.5rem 1rem; border: none; border-radius: 6px; cursor: pointer; font-weight: 500; transition: background 0.15s, color 0.15s; }
+.btn-primary { background: var(--primary); color: #fff; }
+.btn-primary:hover { background: var(--primary-hover); }
+.btn-secondary { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
+.btn-secondary:hover { background: var(--border); }
+.btn-accent { background: var(--accent); color: #fff; }
+.btn-accent:hover { background: var(--accent-hover); }
+.btn-block { width: 100%; margin-top: 0.5rem; padding: 0.75rem; }
+
+.code-input { width: 100%; min-height: 320px; padding: 1rem; font-family: var(--font); font-size: 13px; line-height: 1.5; color: var(--text); background: var(--bg); border: none; resize: vertical; outline: none; }
+.code-input::placeholder { color: var(--text-muted); }
+
+.right-panel { padding: 0 0 1rem; }
+.tabs { display: flex; padding: 0 1rem; border-bottom: 1px solid var(--border); background: var(--surface2); }
+.tab { padding: 0.6rem 1rem; font-size: 0.875rem; background: none; border: none; color: var(--text-muted); cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; font-family: inherit; }
+.tab:hover { color: var(--text); }
+.tab.active { color: var(--accent); border-bottom-color: var(--accent); font-weight: 500; }
+.tab-content { display: none; padding: 1rem; }
+.tab-content.active { display: block; }
+.hint { color: var(--text-muted); font-size: 0.8rem; margin: 0 0 0.5rem; }
+
+.table-wrap { overflow-x: auto; max-height: 220px; overflow-y: auto; border: 1px solid var(--border); border-radius: 6px; }
+.data-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
+.data-table th, .data-table td { padding: 0.4rem 0.6rem; text-align: left; border-bottom: 1px solid var(--border); }
+.data-table th { background: var(--surface2); color: var(--text-muted); font-weight: 600; white-space: nowrap; position: sticky; top: 0; z-index: 1; }
+.data-table tbody tr { cursor: pointer; }
+.data-table tbody tr:hover { background: var(--surface2); }
+.data-table td { max-width: 140px; overflow: hidden; text-overflow: ellipsis; }
+
+.settings { padding: 1rem; border-top: 1px solid var(--border); margin-top: 0.5rem; }
+.settings h3 { margin: 0 0 0.75rem; font-size: 0.95rem; }
+.field { margin-bottom: 0.75rem; }
+.field label { display: block; color: var(--text-muted); font-size: 0.8rem; margin-bottom: 0.25rem; }
+.field input[type="text"], .field textarea { width: 100%; padding: 0.5rem 0.6rem; font-family: var(--font); font-size: 0.875rem; color: var(--text); background: var(--bg); border: 1px solid var(--border); border-radius: 6px; outline: none; }
+.field textarea { resize: vertical; min-height: 60px; }
+.checkbox-field { display: flex; align-items: center; gap: 0.5rem; }
+.checkbox-field input { width: auto; cursor: pointer; }
+.checkbox-field label { margin: 0; cursor: pointer; }
+
+.status { margin-top: 0.5rem; font-size: 0.8rem; color: var(--text-muted); min-height: 1.2em; }
+.status.error { color: var(--danger); }
+.status.success { color: var(--primary); }
+
+.modal { position: fixed; inset: 0; z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 1rem; }
+.modal[hidden] { display: none; }
+.modal-backdrop { position: absolute; inset: 0; background: rgba(0, 0, 0, 0.6); }
+.modal-box { position: relative; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 1.25rem; max-width: 480px; width: 100%; max-height: 90vh; overflow-y: auto; }
+.modal-box h3 { margin: 0 0 1rem; font-size: 1rem; }
+.modal-actions { display: flex; justify-content: flex-end; gap: 0.5rem; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border); }
+.form-row { margin-bottom: 0.75rem; }
+.form-row label { display: block; font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.25rem; }
+.form-row input, .form-row select, .form-row textarea { width: 100%; padding: 0.5rem; font-size: 0.875rem; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; color: var(--text); font-family: var(--font); }
+.form-row textarea { min-height: 120px; resize: vertical; }
