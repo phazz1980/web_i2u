@@ -262,19 +262,6 @@ function createUbiXmlSixx(
     if (!line.endsWith(';')) return;
     const stmt = line.slice(0, -1).trim();
     const declId = nextId(), declNameId = nextId(), declLastId = nextId(), declFirstId = nextId();
-<<<<<<< HEAD
-    // Тип может содержать пробелы и * (const char*, unsigned long и т.д.) — берём последний идентификатор перед = как имя переменной
-    const declMatch = stmt.match(/^(.+?)\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*(=.*)?$/s);
-    let firstPart, namePart, lastPartRaw;
-    if (declMatch) {
-      firstPart = declMatch[1].trim();
-      namePart = declMatch[2];
-      lastPartRaw = (declMatch[3] || '').trim();
-    } else {
-      firstPart = stmt || '';
-      namePart = '';
-      lastPartRaw = '';
-=======
     let firstPart, namePart, lastPart;
     const eqPos = findTopLevelEquals(stmt);
     if (eqPos >= 0) {
@@ -289,7 +276,6 @@ function createUbiXmlSixx(
       namePart = nameMatch ? nameMatch[1] : '';
       firstPart = nameMatch ? stmt.slice(0, nameMatch.index).trim() : stmt;
       lastPart = ';';
->>>>>>> 32e8510644fb42e08658759e882fbb19c5c4121c
     }
     declareXml += '\t\t\t\t\t<sixx.object sixx.id="' + declId + '" sixx.type="CodeUserBlockDeclareStandartBlock" sixx.env="Arduino" >\n';
     declareXml += '\t\t\t\t\t\t<sixx.object sixx.id="' + declNameId + '" sixx.name="name" sixx.type="String" sixx.env="Core" >' + escapeHtml(namePart) + '</sixx.object>\n';
