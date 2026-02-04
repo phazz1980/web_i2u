@@ -235,14 +235,15 @@ function createUbiXmlSixx(
     if (!line.endsWith(';')) return;
     const stmt = line.slice(0, -1).trim();
     const declId = nextId(), declNameId = nextId(), declLastId = nextId(), declFirstId = nextId();
-    const parts = stmt.split(/\s+/);
+    // Тип может содержать пробелы и * (const char*, unsigned long и т.д.) — берём последний идентификатор перед = как имя переменной
+    const declMatch = stmt.match(/^(.+?)\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*(=.*)?$/s);
     let firstPart, namePart, lastPartRaw;
-    if (parts.length >= 2) {
-      firstPart = parts[0];
-      namePart = parts[1];
-      lastPartRaw = parts.slice(2).join(' ') || '';
+    if (declMatch) {
+      firstPart = declMatch[1].trim();
+      namePart = declMatch[2];
+      lastPartRaw = (declMatch[3] || '').trim();
     } else {
-      firstPart = parts[0] || '';
+      firstPart = stmt || '';
       namePart = '';
       lastPartRaw = '';
     }
