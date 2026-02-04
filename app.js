@@ -275,4 +275,14 @@
   modalEdit.querySelector('.modal-backdrop').addEventListener('click', function () {
     modalEdit.hidden = true;
   });
+
+  var modalHelp = document.getElementById('modalHelp');
+  var btnHelp = document.getElementById('btnHelp');
+  var modalHelpClose = document.getElementById('modalHelpClose');
+  if (btnHelp && modalHelp) {
+    btnHelp.addEventListener('click', function () { modalHelp.hidden = false; });
+    if (modalHelpClose) modalHelpClose.addEventListener('click', function () { modalHelp.hidden = true; });
+    var helpBackdrop = modalHelp.querySelector('.modal-backdrop');
+    if (helpBackdrop) helpBackdrop.addEventListener('click', function () { modalHelp.hidden = true; });
+  }
 })();
