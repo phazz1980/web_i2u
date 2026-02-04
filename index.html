@@ -9,9 +9,14 @@
 <body>
   <div class="app">
     <header class="header">
-      <h1>ino2ubi</h1>
-      <p class="tagline">Конвертер Arduino (.ino) в пользовательские блоки FLProg (.ubi)</p>
-      <p class="version">Версия <span id="versionSpan">—</span> (работает в браузере, без сервера)</p>
+      <div class="header-row">
+        <div>
+          <h1>ino2ubi</h1>
+          <p class="tagline">Конвертер Arduino (.ino) в пользовательские блоки FLProg (.ubi)</p>
+          <p class="version">Версия <span id="versionSpan">—</span> (работает в браузере, без сервера)</p>
+        </div>
+        <button type="button" id="btnHelp" class="btn btn-secondary" title="Справка по работе">Справка</button>
+      </div>
     </header>
 
     <main class="main">
@@ -89,6 +94,54 @@
         <p id="status" class="status"></p>
       </section>
     </main>
+  </div>
+
+  <!-- Справка -->
+  <div id="modalHelp" class="modal" hidden>
+    <div class="modal-backdrop"></div>
+    <div class="modal-box modal-help">
+      <h3>Справка по работе с конвертером</h3>
+      <div class="help-content">
+        <h4>Что делает конвертер</h4>
+        <p>ino2ubi преобразует Arduino-скетчи (.ino) в пользовательские блоки (.ubi) для программы FLProg. Блок можно импортировать в FLProg и использовать как обычный пользовательский блок.</p>
+
+        <h4>Пошаговая инструкция</h4>
+        <ol>
+          <li><strong>Загрузите .ino</strong> (кнопка «Загрузить .ino») или вставьте код Arduino в поле слева.</li>
+          <li>Нажмите <strong>«Парсить код»</strong> — конвертер извлечёт переменные, функции, #include и #define.</li>
+          <li>Во вкладках <strong>«Переменные»</strong> и <strong>«Функции»</strong> при необходимости отредактируйте настройки (двойной клик по строке).</li>
+          <li>Задайте <strong>название</strong> и <strong>описание</strong> блока.</li>
+          <li>Нажмите <strong>«Сгенерировать .ubi и скачать»</strong> — файл сохранится на компьютер.</li>
+          <li>Импортируйте .ubi в FLProg (меню библиотеки блоков).</li>
+        </ol>
+
+        <h4>Роли переменных</h4>
+        <ul>
+          <li><strong>variable</strong> — внутренняя переменная, не отображается на блоке.</li>
+          <li><strong>input</strong> — вход (слева на блоке), получает данные от других блоков.</li>
+          <li><strong>output</strong> — выход (справа на блоке), передаёт данные другим блокам.</li>
+          <li><strong>parameter</strong> — настраиваемый параметр, задаётся в свойствах блока.</li>
+        </ul>
+
+        <h4>Определение ролей в коде</h4>
+        <p>Роли можно задать комментариями после объявления переменной:</p>
+        <pre>int sensorValue = 0;  // in — вход
+int result = 0;       // out — выход
+int threshold = 100;  // par — параметр</pre>
+        <p>Для <code>#define</code> роль параметра задаётся комментарием <code>//par</code>.</p>
+
+        <h4>Примечания</h4>
+        <ul>
+          <li>Комментарий в начале скетча (<code>//</code> или <code>/* */</code>) используется как описание блока.</li>
+          <li>Функции <code>setup()</code> и <code>loop()</code> автоматически помещаются в соответствующие секции блока.</li>
+          <li>Дополнительные функции отображаются во вкладке «Функции»; тело можно редактировать двойным кликом.</li>
+          <li>Опция «Вход En» оборачивает код в <code>loop</code> в условие <code>if(En) { … }</code> — блок будет выполняться только при активном входе En.</li>
+        </ul>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-primary" id="modalHelpClose">Закрыть</button>
+      </div>
+    </div>
   </div>
 
   <div id="modalEdit" class="modal" hidden>

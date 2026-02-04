@@ -30,7 +30,9 @@ body {
 
 .app { max-width: 1600px; margin: 0 auto; padding: 1rem 1.5rem 2rem; }
 
-.header { text-align: center; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border); }
+.header { margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border); }
+.header-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
+.header-row > div { flex: 1; min-width: 0; }
 .header h1 { font-family: var(--font); font-size: 1.75rem; font-weight: 700; margin: 0 0 0.25rem; color: var(--text); letter-spacing: 0.02em; }
 .tagline { color: var(--text-muted); margin: 0 0 0.25rem; font-size: 0.95rem; }
 .version { color: var(--text-muted); font-size: 0.8rem; margin: 0; }
@@ -96,3 +98,11 @@ body {
 .form-row label { display: block; font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.25rem; }
 .form-row input, .form-row select, .form-row textarea { width: 100%; padding: 0.5rem; font-size: 0.875rem; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; color: var(--text); font-family: var(--font); }
 .form-row textarea { min-height: 120px; resize: vertical; }
+
+.help-content { max-height: 60vh; overflow-y: auto; margin-bottom: 1rem; }
+.help-content h4 { margin: 1rem 0 0.5rem; font-size: 0.95rem; }
+.help-content h4:first-child { margin-top: 0; }
+.help-content p, .help-content ul, .help-content ol { margin: 0 0 0.5rem; font-size: 0.9rem; line-height: 1.5; }
+.help-content pre { background: var(--bg); padding: 0.75rem; border-radius: 6px; font-size: 0.8rem; overflow-x: auto; margin: 0.5rem 0; }
+.help-content code { background: var(--surface2); padding: 0.1em 0.3em; border-radius: 4px; font-size: 0.85em; }
+.modal-help .modal-box { max-width: 560px; }

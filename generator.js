@@ -23,6 +23,33 @@ function escapeCodeForSixx(text) {
   return s;
 }
 
+function findTopLevelEquals(str) {
+  let paren = 0, bracket = 0, brace = 0;
+  let inString = false, stringChar = '', escape = false;
+  for (let i = 0; i < str.length; i++) {
+    const ch = str[i];
+    if (inString) {
+      if (escape) escape = false;
+      else if (ch === '\\') escape = true;
+      else if (ch === stringChar) inString = false;
+      continue;
+    }
+    if (ch === '"' || ch === "'") {
+      inString = true;
+      stringChar = ch;
+      continue;
+    }
+    if (ch === '(') paren++;
+    else if (ch === ')') paren = Math.max(paren - 1, 0);
+    else if (ch === '[') bracket++;
+    else if (ch === ']') bracket = Math.max(bracket - 1, 0);
+    else if (ch === '{') brace++;
+    else if (ch === '}') brace = Math.max(brace - 1, 0);
+    if (ch === '=' && paren === 0 && bracket === 0 && brace === 0) return i;
+  }
+  return -1;
+}
+
 function createSixxDataType(varType, typeId, instanceCollId, nextId) {
   const typeClass = getTypeClassName(varType);
   const instanceId = nextId();
@@ -235,20 +262,21 @@ function createUbiXmlSixx(
     if (!line.endsWith(';')) return;
     const stmt = line.slice(0, -1).trim();
     const declId = nextId(), declNameId = nextId(), declLastId = nextId(), declFirstId = nextId();
-    const parts = stmt.split(/\s+/);
-    let firstPart, namePart, lastPartRaw;
-    if (parts.length >= 2) {
-      firstPart = parts[0];
-      namePart = parts[1];
-      lastPartRaw = parts.slice(2).join(' ') || '';
+    let firstPart, namePart, lastPart;
+    const eqPos = findTopLevelEquals(stmt);
+    if (eqPos >= 0) {
+      const leftSide = stmt.slice(0, eqPos).trim();
+      const valueSide = stmt.slice(eqPos + 1).trim();
+      const nameMatch = leftSide.match(/\b([A-Za-z_][A-Za-z0-9_]*)\s*$/);
+      namePart = nameMatch ? nameMatch[1] : '';
+      firstPart = nameMatch ? leftSide.slice(0, nameMatch.index).trim() : leftSide;
+      lastPart = '= ' + escapeCodeForSixx(valueSide) + ';';
     } else {
-      firstPart = parts[0] || '';
-      namePart = '';
-      lastPartRaw = '';
+      const nameMatch = stmt.match(/\b([A-Za-z_][A-Za-z0-9_]*)\s*$/);
+      namePart = nameMatch ? nameMatch[1] : '';
+      firstPart = nameMatch ? stmt.slice(0, nameMatch.index).trim() : stmt;
+      lastPart = ';';
     }
-    const lastPart = lastPartRaw.startsWith('=')
-      ? '= ' + escapeCodeForSixx(lastPartRaw.slice(1).trim()) + ';'
-      : (lastPartRaw ? '= ' + escapeCodeForSixx(lastPartRaw) + ';' : ';');
     declareXml += '\t\t\t\t\t<sixx.object sixx.id="' + declId + '" sixx.type="CodeUserBlockDeclareStandartBlock" sixx.env="Arduino" >\n';
     declareXml += '\t\t\t\t\t\t<sixx.object sixx.id="' + declNameId + '" sixx.name="name" sixx.type="String" sixx.env="Core" >' + escapeHtml(namePart) + '</sixx.object>\n';
     declareXml += '\t\t\t\t\t\t<sixx.object sixx.id="' + declLastId + '" sixx.name="lastPart" sixx.type="String" sixx.env="Core" >' + lastPart + '</sixx.object>\n';
