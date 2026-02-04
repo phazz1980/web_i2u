@@ -50,14 +50,10 @@ function findTopLevelEquals(str) {
   return -1;
 }
 
-function createSixxDataType(varType, typeId, instanceCollId, nextId) {
+// Простой формат типа как в эталоне 11.ubi: только имя типа (без " class"), пустой объект
+function createSixxDataTypeSimple(varType, typeId) {
   const typeClass = getTypeClassName(varType);
-  const instanceId = nextId();
-  let xml = '\t\t\t\t<sixx.object sixx.id="' + typeId + '" sixx.name="type" sixx.type="' + typeClass + ' class" sixx.env="Arduino" >\n';
-  xml += '\t\t\t\t\t<sixx.object sixx.id="' + instanceCollId + '" sixx.name="instanceCollection" sixx.type="OrderedCollection" sixx.env="Core" >\n';
-  xml += '\t\t\t\t\t\t<sixx.object sixx.id="' + instanceId + '" sixx.type="' + typeClass + '" sixx.env="Arduino" >\n';
-  xml += '\t\t\t\t\t\t</sixx.object>\n\t\t\t\t\t</sixx.object>\n\t\t\t\t</sixx.object>\n';
-  return xml;
+  return '\t\t\t\t<sixx.object sixx.id="' + typeId + '" sixx.name="type" sixx.type="' + typeClass + '" sixx.env="Arduino" >\n\t\t\t\t</sixx.object>\n';
 }
 
 function createUbiXmlSixx(
@@ -92,7 +88,6 @@ function createUbiXmlSixx(
   const blocksCollId = nextId();
   const labelId = nextId();
   const inputsCollId = nextId();
-  const instanceCollId = 15;
   const commentStrId = 18;
 
   const codeOrderPos = v => v.position !== undefined ? v.position : 999999999;
@@ -102,37 +97,36 @@ function createUbiXmlSixx(
   inputsList.sort((a, b) => codeOrderPos(a[1]) - codeOrderPos(b[1]));
 
   if (enableInput) {
-    const enAdaptorId = nextId(), enObjId = nextId(), enIdSourceId = nextId(), enTypeId = nextId();
-    const enNameId = nextId(), enUuidObjId = nextId(), enInputUuid = uuidv4();
+    const enAdaptorId = nextId(), enObjId = nextId(), enTypeId = nextId();
+    const enNameId = nextId(), enIdInObjId = nextId(), enCommentId = nextId(), enAdaptorUuidId = nextId();
+    const enIdInObjUuid = uuidv4(), enAdaptorUuid = uuidv4();
     inputsXml += '\t\t\t<sixx.object sixx.id="' + enAdaptorId + '" sixx.type="InputsOutputsAdaptorForUserBlock" sixx.env="Arduino" >\n';
     inputsXml += '\t\t\t\t<sixx.object sixx.id="' + enObjId + '" sixx.name="object" sixx.type="UniversalBlockInputOutput" sixx.env="Arduino" >\n';
-    inputsXml += '\t\t\t\t\t<sixx.object sixx.id="' + enIdSourceId + '" sixx.name="id" sixx.type="SmallInteger" sixx.env="Core" >119328430</sixx.object>\n';
     inputsXml += '\t\t\t\t\t<sixx.object sixx.name="block" sixx.idref="' + codeBlockId + '" />\n';
-    inputsXml += createSixxDataType('boolean', enTypeId, instanceCollId, nextId);
+    inputsXml += createSixxDataTypeSimple('boolean', enTypeId);
     inputsXml += '\t\t\t\t\t<sixx.object sixx.name="isInput" sixx.type="True" sixx.env="Core" />\n';
     inputsXml += '\t\t\t\t\t<sixx.object sixx.id="' + enNameId + '" sixx.name="name" sixx.type="String" sixx.env="Core" >En</sixx.object>\n';
     inputsXml += '\t\t\t\t\t<sixx.object sixx.name="isNot" sixx.type="False" sixx.env="Core" />\n';
-    inputsXml += '\t\t\t\t\t<sixx.object sixx.name="nameCash" sixx.idref="' + enNameId + '" />\n';
-    inputsXml += '\t\t\t\t</sixx.object>\n\t\t\t\t<sixx.object sixx.name="comment" sixx.idref="' + commentStrId + '" />\n';
-    inputsXml += '\t\t\t\t<sixx.object sixx.id="' + enUuidObjId + '" sixx.name="id" sixx.type="String" sixx.env="Core" >' + enInputUuid + '</sixx.object>\n';
+    inputsXml += '\t\t\t\t\t<sixx.object sixx.id="' + enIdInObjId + '" sixx.name="id" sixx.type="String" sixx.env="Core" >' + enIdInObjUuid + '</sixx.object>\n';
+    inputsXml += '\t\t\t\t</sixx.object>\n\t\t\t\t<sixx.object sixx.id="' + enCommentId + '" sixx.name="comment" sixx.type="String" sixx.env="Core" ></sixx.object>\n';
+    inputsXml += '\t\t\t\t<sixx.object sixx.id="' + enAdaptorUuidId + '" sixx.name="id" sixx.type="String" sixx.env="Core" >' + enAdaptorUuid + '</sixx.object>\n';
     inputsXml += '\t\t\t</sixx.object>\n';
   }
 
-  let idBase = enableInput ? 119329430 : 119328430;
-  inputsList.forEach(([varName, varInfo], idx) => {
-    const adaptorId = nextId(), objId = nextId(), idSourceId = nextId(), typeId = nextId();
-    const nameId = nextId(), uuidObjId = nextId(), inputUuid = uuidv4();
+  inputsList.forEach(([varName, varInfo]) => {
+    const adaptorId = nextId(), objId = nextId(), typeId = nextId();
+    const nameId = nextId(), idInObjId = nextId(), commentId = nextId(), adaptorUuidId = nextId();
+    const idInObjUuid = uuidv4(), adaptorUuid = uuidv4();
     inputsXml += '\t\t\t<sixx.object sixx.id="' + adaptorId + '" sixx.type="InputsOutputsAdaptorForUserBlock" sixx.env="Arduino" >\n';
     inputsXml += '\t\t\t\t<sixx.object sixx.id="' + objId + '" sixx.name="object" sixx.type="UniversalBlockInputOutput" sixx.env="Arduino" >\n';
-    inputsXml += '\t\t\t\t\t<sixx.object sixx.id="' + idSourceId + '" sixx.name="id" sixx.type="SmallInteger" sixx.env="Core" >' + (idBase + idx * 1000) + '</sixx.object>\n';
     inputsXml += '\t\t\t\t\t<sixx.object sixx.name="block" sixx.idref="' + codeBlockId + '" />\n';
-    inputsXml += createSixxDataType(varInfo.type, typeId, instanceCollId, nextId);
+    inputsXml += createSixxDataTypeSimple(varInfo.type, typeId);
     inputsXml += '\t\t\t\t\t<sixx.object sixx.name="isInput" sixx.type="True" sixx.env="Core" />\n';
     inputsXml += '\t\t\t\t\t<sixx.object sixx.id="' + nameId + '" sixx.name="name" sixx.type="String" sixx.env="Core" >' + (varInfo.alias || varName) + '</sixx.object>\n';
     inputsXml += '\t\t\t\t\t<sixx.object sixx.name="isNot" sixx.type="False" sixx.env="Core" />\n';
-    inputsXml += '\t\t\t\t\t<sixx.object sixx.name="nameCash" sixx.idref="' + nameId + '" />\n';
-    inputsXml += '\t\t\t\t</sixx.object>\n\t\t\t\t<sixx.object sixx.name="comment" sixx.idref="' + commentStrId + '" />\n';
-    inputsXml += '\t\t\t\t<sixx.object sixx.id="' + uuidObjId + '" sixx.name="id" sixx.type="String" sixx.env="Core" >' + inputUuid + '</sixx.object>\n';
+    inputsXml += '\t\t\t\t\t<sixx.object sixx.id="' + idInObjId + '" sixx.name="id" sixx.type="String" sixx.env="Core" >' + idInObjUuid + '</sixx.object>\n';
+    inputsXml += '\t\t\t\t</sixx.object>\n\t\t\t\t<sixx.object sixx.id="' + commentId + '" sixx.name="comment" sixx.type="String" sixx.env="Core" ></sixx.object>\n';
+    inputsXml += '\t\t\t\t<sixx.object sixx.id="' + adaptorUuidId + '" sixx.name="id" sixx.type="String" sixx.env="Core" >' + adaptorUuid + '</sixx.object>\n';
     inputsXml += '\t\t\t</sixx.object>\n';
   });
 
@@ -148,7 +142,7 @@ function createUbiXmlSixx(
     outputsXml += '\t\t\t\t<sixx.object sixx.id="' + objId + '" sixx.name="object" sixx.type="UniversalBlockInputOutput" sixx.env="Arduino" >\n';
     outputsXml += '\t\t\t\t\t<sixx.object sixx.id="' + idSourceId + '" sixx.name="id" sixx.type="SmallInteger" sixx.env="Core" >' + (idBase + idx * 1000) + '</sixx.object>\n';
     outputsXml += '\t\t\t\t\t<sixx.object sixx.name="block" sixx.idref="' + codeBlockId + '" />\n';
-    outputsXml += createSixxDataType(varInfo.type, typeId, instanceCollId, nextId);
+    outputsXml += createSixxDataTypeSimple(varInfo.type, typeId);
     outputsXml += '\t\t\t\t\t<sixx.object sixx.name="isInput" sixx.type="False" sixx.env="Core" />\n';
     outputsXml += '\t\t\t\t\t<sixx.object sixx.id="' + nameId + '" sixx.name="name" sixx.type="String" sixx.env="Core" >' + (varInfo.alias || varName) + '</sixx.object>\n';
     outputsXml += '\t\t\t\t\t<sixx.object sixx.name="isNot" sixx.type="False" sixx.env="Core" />\n';
@@ -186,7 +180,7 @@ function createUbiXmlSixx(
     paramsXml += '\t\t\t\t<sixx.object sixx.id="' + adaptorId + '" sixx.type="InputsOutputsAdaptorForUserBlock" sixx.env="Arduino" >\n';
     paramsXml += '\t\t\t\t\t<sixx.object sixx.id="' + paramId + '" sixx.name="object" sixx.type="UserBlockParametr" sixx.env="Arduino" >\n';
     paramsXml += '\t\t\t\t\t\t<sixx.object sixx.id="' + paramNameId + '" sixx.name="name" sixx.type="String" sixx.env="Core" >' + (varInfo.alias || name) + '</sixx.object>\n';
-    paramsXml += createSixxDataType(varInfo.type, paramTypeId, instanceCollId, nextId);
+    paramsXml += createSixxDataTypeSimple(varInfo.type, paramTypeId);
     paramsXml += '\t\t\t\t\t\t<sixx.object sixx.name="hasDefaultValue" sixx.type="True" sixx.env="Core" />\n';
     if (varInfo.type === 'String') {
       paramsXml += '\t\t\t\t\t\t<sixx.object sixx.id="' + defaultValId + '" sixx.name="stringDefaultValue" sixx.type="String" sixx.env="Core" >' + escapeHtml(defaultVal) + '</sixx.object>\n';
@@ -262,19 +256,6 @@ function createUbiXmlSixx(
     if (!line.endsWith(';')) return;
     const stmt = line.slice(0, -1).trim();
     const declId = nextId(), declNameId = nextId(), declLastId = nextId(), declFirstId = nextId();
-<<<<<<< HEAD
-    // Тип может содержать пробелы и * (const char*, unsigned long и т.д.) — берём последний идентификатор перед = как имя переменной
-    const declMatch = stmt.match(/^(.+?)\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*(=.*)?$/s);
-    let firstPart, namePart, lastPartRaw;
-    if (declMatch) {
-      firstPart = declMatch[1].trim();
-      namePart = declMatch[2];
-      lastPartRaw = (declMatch[3] || '').trim();
-    } else {
-      firstPart = stmt || '';
-      namePart = '';
-      lastPartRaw = '';
-=======
     let firstPart, namePart, lastPart;
     const eqPos = findTopLevelEquals(stmt);
     if (eqPos >= 0) {
@@ -289,7 +270,6 @@ function createUbiXmlSixx(
       namePart = nameMatch ? nameMatch[1] : '';
       firstPart = nameMatch ? stmt.slice(0, nameMatch.index).trim() : stmt;
       lastPart = ';';
->>>>>>> 32e8510644fb42e08658759e882fbb19c5c4121c
     }
     declareXml += '\t\t\t\t\t<sixx.object sixx.id="' + declId + '" sixx.type="CodeUserBlockDeclareStandartBlock" sixx.env="Arduino" >\n';
     declareXml += '\t\t\t\t\t\t<sixx.object sixx.id="' + declNameId + '" sixx.name="name" sixx.type="String" sixx.env="Core" >' + escapeHtml(namePart) + '</sixx.object>\n';
