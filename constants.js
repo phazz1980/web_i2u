@@ -1,5 +1,5 @@
 /**
- * Константы ino2ubi — конвертер Arduino в блоки FLProg
+ * Константы ino2ubi — конвертер Arduino в блоки FLProg!
  */
 const VERSION = '1.7.3';
 
