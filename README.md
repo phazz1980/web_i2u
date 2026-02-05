@@ -14,7 +14,6 @@
    `https://<username>.github.io/<repo>/`
 
 
-
 Затем откройте http://localhost:8080
 
 ## Файлы
