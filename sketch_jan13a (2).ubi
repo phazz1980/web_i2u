@@ -1,0 +1,44 @@
+<sixx.object sixx.id="0" sixx.type="BlocksLibraryElement" sixx.env="Arduino" >
+	<sixx.object sixx.id="1" sixx.name="typeClass" sixx.type="CodeUserBlock" sixx.env="Arduino" >
+		<sixx.object sixx.id="2" sixx.name="id" sixx.type="String" sixx.env="Core" >7a4b8278-ab5d-4b7c-a2c8-2db7d1e6a4fd</sixx.object>
+		<sixx.object sixx.id="3" sixx.name="blocks" sixx.type="OrderedCollection" sixx.env="Core" ></sixx.object>
+		<sixx.object sixx.id="4" sixx.name="label" sixx.type="String" sixx.env="Core" >sketch_jan13a</sixx.object>
+		<sixx.object sixx.id="5" sixx.name="inputs" sixx.type="OrderedCollection" sixx.env="Core" ></sixx.object>
+		<sixx.object sixx.id="6" sixx.name="outputs" sixx.type="OrderedCollection" sixx.env="Core" ></sixx.object>
+		<sixx.object sixx.id="7" sixx.name="variables" sixx.type="OrderedCollection" sixx.env="Core" ></sixx.object>
+		<sixx.object sixx.id="8" sixx.name="name" sixx.type="String" sixx.env="Core" >sketch_jan13a</sixx.object>
+		<sixx.object sixx.id="9" sixx.name="info" sixx.type="Text" sixx.env="Core" >
+			<sixx.object sixx.id="10" sixx.name="string" sixx.type="String" sixx.env="Core" >Программа для управления камерой</sixx.object>
+			<sixx.object sixx.id="11" sixx.name="runs" sixx.type="RunArray" sixx.env="Core" >
+				<sixx.object sixx.id="12" sixx.name="runs" sixx.type="Array" sixx.env="Core" >
+					<sixx.object sixx.id="13" sixx.type="SmallInteger" sixx.env="Core" >50</sixx.object>
+				</sixx.object>
+				<sixx.object sixx.id="14" sixx.name="values" sixx.type="Array" sixx.env="Core" >
+					<sixx.object sixx.type="UndefinedObject" sixx.env="Core" />
+				</sixx.object>
+			</sixx.object>
+		</sixx.object>
+		<sixx.object sixx.id="15" sixx.name="parametrs" sixx.type="OrderedCollection" sixx.env="Core" ></sixx.object>
+		<sixx.object sixx.id="16" sixx.name="loopCodePart" sixx.type="CodeUserBlockLoopCodePart" sixx.env="Arduino" >
+			<sixx.object sixx.id="17" sixx.name="code" sixx.type="String" sixx.env="Core" ></sixx.object>
+		</sixx.object>
+		<sixx.object sixx.id="18" sixx.name="setupCodePart" sixx.type="CodeUserBlockSetupCodePart" sixx.env="Arduino" >
+			<sixx.object sixx.id="19" sixx.name="code" sixx.type="String" sixx.env="Core" ></sixx.object>
+		</sixx.object>
+		<sixx.object sixx.id="20" sixx.name="declareCodePart" sixx.type="CodeUserBlockDeclareCodePart" sixx.env="Arduino" >
+			<sixx.object sixx.id="21" sixx.name="code" sixx.type="OrderedCollection" sixx.env="Core" >
+					<sixx.object sixx.id="22" sixx.type="CodeUserBlockDeclareStandartBlock" sixx.env="Arduino" >
+						<sixx.object sixx.id="23" sixx.name="name" sixx.type="String" sixx.env="Core" >sensorPan</sixx.object>
+						<sixx.object sixx.id="24" sixx.name="lastPart" sixx.type="String" sixx.env="Core" >;</sixx.object>
+						<sixx.object sixx.id="25" sixx.name="firstPart" sixx.type="String" sixx.env="Core" >int</sixx.object>
+					</sixx.object>
+			</sixx.object>
+		</sixx.object>
+		<sixx.object sixx.id="26" sixx.name="functionCodePart" sixx.type="CodeUserBlockFunctuinCodePart" sixx.env="Arduino" >
+			<sixx.object sixx.id="27" sixx.name="code" sixx.type="OrderedCollection" sixx.env="Core" >
+			</sixx.object>
+		</sixx.object>
+		<sixx.object sixx.id="28" sixx.name="userLibraries" sixx.type="OrderedCollection" sixx.env="Core" ></sixx.object>
+		<sixx.object sixx.name="notCanManyUse" sixx.type="False" sixx.env="Core" />
+	</sixx.object>
+</sixx.object>

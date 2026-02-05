@@ -50,10 +50,25 @@ function findTopLevelEquals(str) {
   return -1;
 }
 
-// Простой формат типа как в эталоне 11.ubi: только имя типа (без " class"), пустой объект
+// Простой формат типа как в эталоне 11.ubi: только имя типа (без " class"), пустой объект — для входов/выходов
 function createSixxDataTypeSimple(varType, typeId) {
   const typeClass = getTypeClassName(varType);
   return '\t\t\t\t<sixx.object sixx.id="' + typeId + '" sixx.name="type" sixx.type="' + typeClass + '" sixx.env="Arduino" >\n\t\t\t\t</sixx.object>\n';
+}
+
+// Формат типа параметра как в Пример_правильного_параметра.ubi: "TypeName class" + только instanceCollection (без color/colorSymbol)
+function createSixxDataTypeParam(varType, typeId, nextId) {
+  const typeClass = getTypeClassName(varType);
+  const instanceCollId = nextId();
+  const instanceId = nextId();
+  let xml = '\t\t\t\t\t<sixx.object sixx.id="' + typeId + '" sixx.name="type" sixx.type="' + typeClass + ' class" sixx.env="Arduino" >\n';
+  xml += '\t\t\t\t\t\t<sixx.object sixx.id="' + instanceCollId + '" sixx.name="instanceCollection" sixx.type="OrderedCollection" sixx.env="Core" >\n';
+  xml += '\t\t\t\t\t\t\t<sixx.object sixx.id="' + instanceId + '" sixx.type="' + typeClass + '" sixx.env="Arduino" >\n';
+  xml += '\t\t\t\t\t\t\t</sixx.object>\n';
+  xml += '\t\t\t\t\t\t\t<sixx.object sixx.idref="' + instanceId + '" />\n';
+  xml += '\t\t\t\t\t\t</sixx.object>\n';
+  xml += '\t\t\t\t\t</sixx.object>\n';
+  return xml;
 }
 
 function createUbiXmlSixx(
@@ -337,11 +352,14 @@ function createUbiXmlSixx(
   xml += paramsXml
     ? '\t\t<sixx.object sixx.id="' + paramsCollId + '" sixx.name="parametrs" sixx.type="OrderedCollection" sixx.env="Core" >\n' + paramsXml + '\t\t</sixx.object>\n'
     : '\t\t<sixx.object sixx.id="' + paramsCollId + '" sixx.name="parametrs" sixx.type="OrderedCollection" sixx.env="Core" ></sixx.object>\n';
+  /* Объекты с текстом кода — отдельно; loop/setup ссылаются на них через idref (как в эталоне .ubi) */
+  xml += '\t\t<sixx.object sixx.id="' + loopCodeId + '" sixx.name="code" sixx.type="String" sixx.env="Core" >' + loopCodeEncoded + '</sixx.object>\n';
+  xml += '\t\t<sixx.object sixx.id="' + setupCodeId + '" sixx.name="code" sixx.type="String" sixx.env="Core" >' + setupCodeEncoded + '</sixx.object>\n';
   xml += '\t\t<sixx.object sixx.id="' + loopPartId + '" sixx.name="loopCodePart" sixx.type="CodeUserBlockLoopCodePart" sixx.env="Arduino" >\n';
-  xml += '\t\t\t<sixx.object sixx.id="' + loopCodeId + '" sixx.name="code" sixx.type="String" sixx.env="Core" >' + loopCodeEncoded + '</sixx.object>\n';
+  xml += '\t\t\t<sixx.object sixx.name="code" sixx.idref="' + loopCodeId + '" />\n';
   xml += '\t\t</sixx.object>\n';
   xml += '\t\t<sixx.object sixx.id="' + setupPartId + '" sixx.name="setupCodePart" sixx.type="CodeUserBlockSetupCodePart" sixx.env="Arduino" >\n';
-  xml += '\t\t\t<sixx.object sixx.id="' + setupCodeId + '" sixx.name="code" sixx.type="String" sixx.env="Core" >' + setupCodeEncoded + '</sixx.object>\n';
+  xml += '\t\t\t<sixx.object sixx.name="code" sixx.idref="' + setupCodeId + '" />\n';
   xml += '\t\t</sixx.object>\n';
   xml += '\t\t<sixx.object sixx.id="' + declarePartId + '" sixx.name="declareCodePart" sixx.type="CodeUserBlockDeclareCodePart" sixx.env="Arduino" >\n';
   xml += '\t\t\t<sixx.object sixx.id="' + declareCollId + '" sixx.name="code" sixx.type="OrderedCollection" sixx.env="Core" >\n' + declareXml + '\t\t\t</sixx.object>\n';
