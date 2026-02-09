@@ -23,8 +23,8 @@ function escapeCodeForSixx(text) {
   return s;
 }
 
+// НЕ МЕНЯТЬ: используется для блока info; иначе FLProg зависает при открытии описания.
 function escapeDescriptionForSixx(text) {
-  // Для описания в блоке info нужно экранировать запятые как &#44;
   let s = escapeHtml(text);
   s = s.replace(/,/g, '&#44;');
   return s;
@@ -348,6 +348,7 @@ function createUbiXmlSixx(
   xml += '\t\t<sixx.object sixx.id="' + varsCollId + '" sixx.name="variables" sixx.type="OrderedCollection" sixx.env="Core" ></sixx.object>\n';
   xml += '\t\t<sixx.object sixx.id="' + mainUuidId + '" sixx.name="id" sixx.type="String" sixx.env="Core" >' + mainUuid + '</sixx.object>\n';
   xml += '\t\t<sixx.object sixx.id="' + nameStrId + '" sixx.name="name" sixx.type="String" sixx.env="Core" >' + blockName + '</sixx.object>\n';
+  // НЕ МЕНЯТЬ: runsLength должен быть длиной строки описания, иначе FLProg зависает при открытии описания.
   const descriptionEscaped = escapeDescriptionForSixx(blockDescription);
   const runsLength = descriptionEscaped.length;
   xml += '\t\t<sixx.object sixx.id="' + infoId + '" sixx.name="info" sixx.type="Text" sixx.env="Core" >\n';
