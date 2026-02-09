@@ -1,7 +1,7 @@
 /**
  * Константы ino2ubi — конвертер Arduino в блоки FLProg
  */
-const VERSION = '1.7.6';
+const VERSION = '1.7.7';
 
 const PRIMITIVE_TYPES = new Set([
   'int', 'long', 'unsigned long', 'bool', 'boolean', 'float', 'double',

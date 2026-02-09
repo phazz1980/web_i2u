@@ -23,6 +23,13 @@ function escapeCodeForSixx(text) {
   return s;
 }
 
+function escapeDescriptionForSixx(text) {
+  // Для описания в блоке info нужно экранировать запятые как &#44;
+  let s = escapeHtml(text);
+  s = s.replace(/,/g, '&#44;');
+  return s;
+}
+
 function findTopLevelEquals(str) {
   let paren = 0, bracket = 0, brace = 0;
   let inString = false, stringChar = '', escape = false;
@@ -330,7 +337,6 @@ function createUbiXmlSixx(
 
   let xml = '<sixx.object sixx.id="' + rootId + '" sixx.type="BlocksLibraryElement" sixx.env="Arduino" >\n';
   xml += '\t<sixx.object sixx.id="' + codeBlockId + '" sixx.name="typeClass" sixx.type="CodeUserBlock" sixx.env="Arduino" >\n';
-  xml += '\t\t<sixx.object sixx.id="' + mainUuidId + '" sixx.name="id" sixx.type="String" sixx.env="Core" >' + mainUuid + '</sixx.object>\n';
   xml += '\t\t<sixx.object sixx.id="' + blocksCollId + '" sixx.name="blocks" sixx.type="OrderedCollection" sixx.env="Core" ></sixx.object>\n';
   xml += '\t\t<sixx.object sixx.id="' + labelId + '" sixx.name="label" sixx.type="String" sixx.env="Core" >' + blockName + '</sixx.object>\n';
   xml += inputsXml
@@ -340,12 +346,15 @@ function createUbiXmlSixx(
     ? '\t\t<sixx.object sixx.id="' + outputsCollId + '" sixx.name="outputs" sixx.type="OrderedCollection" sixx.env="Core" >\n' + outputsXml + '\t\t</sixx.object>\n'
     : '\t\t<sixx.object sixx.id="' + outputsCollId + '" sixx.name="outputs" sixx.type="OrderedCollection" sixx.env="Core" ></sixx.object>\n';
   xml += '\t\t<sixx.object sixx.id="' + varsCollId + '" sixx.name="variables" sixx.type="OrderedCollection" sixx.env="Core" ></sixx.object>\n';
+  xml += '\t\t<sixx.object sixx.id="' + mainUuidId + '" sixx.name="id" sixx.type="String" sixx.env="Core" >' + mainUuid + '</sixx.object>\n';
   xml += '\t\t<sixx.object sixx.id="' + nameStrId + '" sixx.name="name" sixx.type="String" sixx.env="Core" >' + blockName + '</sixx.object>\n';
+  const descriptionEscaped = escapeDescriptionForSixx(blockDescription);
+  const runsLength = descriptionEscaped.length;
   xml += '\t\t<sixx.object sixx.id="' + infoId + '" sixx.name="info" sixx.type="Text" sixx.env="Core" >\n';
-  xml += '\t\t\t<sixx.object sixx.id="' + infoStrId + '" sixx.name="string" sixx.type="String" sixx.env="Core" >' + escapeHtml(blockDescription) + '</sixx.object>\n';
+  xml += '\t\t\t<sixx.object sixx.id="' + infoStrId + '" sixx.name="string" sixx.type="String" sixx.env="Core" >' + descriptionEscaped + '</sixx.object>\n';
   xml += '\t\t\t<sixx.object sixx.id="' + runsId + '" sixx.name="runs" sixx.type="RunArray" sixx.env="Core" >\n';
   xml += '\t\t\t\t<sixx.object sixx.id="' + runsArrId + '" sixx.name="runs" sixx.type="Array" sixx.env="Core" >\n';
-  xml += '\t\t\t\t\t<sixx.object sixx.id="' + runsValId + '" sixx.type="SmallInteger" sixx.env="Core" >50</sixx.object>\n';
+  xml += '\t\t\t\t\t<sixx.object sixx.id="' + runsValId + '" sixx.type="SmallInteger" sixx.env="Core" >' + runsLength + '</sixx.object>\n';
   xml += '\t\t\t\t</sixx.object>\n\t\t\t\t<sixx.object sixx.id="' + valuesArrId + '" sixx.name="values" sixx.type="Array" sixx.env="Core" >\n';
   xml += '\t\t\t\t\t<sixx.object sixx.type="UndefinedObject" sixx.env="Core" />\n';
   xml += '\t\t\t\t</sixx.object>\n\t\t\t</sixx.object>\n\t\t</sixx.object>\n';
