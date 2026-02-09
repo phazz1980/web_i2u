@@ -6,10 +6,17 @@ const PRIMITIVE_TYPE_REGEX = new RegExp(
   '^(' + PRIMITIVE_TYPES_LIST.map(t => t.replace(/\s+/g, '\\s+')).join('|') + ')\\b\\s+(.+)$'
 );
 
+function maskComments(text) {
+  let t = text.replace(/\/\*[\s\S]*?\*\//g, match => ' '.repeat(match.length));
+  t = t.replace(/\/\/[^\n]*/g, match => ' '.repeat(match.length));
+  return t;
+}
+
 function extractFunctionBody(code, funcName) {
   const escaped = funcName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   const pattern = new RegExp('void\\s+' + escaped + '\\s*\\(\\s*\\)\\s*\\{');
-  const match = code.match(pattern);
+  const masked = maskComments(code);
+  const match = masked.match(pattern);
   if (!match) return '';
   let startPos = match.index + match[0].length;
   let braceCount = 1;
@@ -86,9 +93,10 @@ function parseFunctionParams(paramsStr) {
 
 function parseFunctions(code) {
   const funcPattern = /(void|int|long|bool|boolean|float|double|byte|char|String|uint8_t|int16_t|uint16_t|int32_t|uint32_t)\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*\(([^)]*)\)\s*\{/g;
+  const masked = maskComments(code);
   const functions = {};
   let match;
-  while ((match = funcPattern.exec(code)) !== null) {
+  while ((match = funcPattern.exec(masked)) !== null) {
     const funcName = match[2];
     if (funcName === 'setup' || funcName === 'loop') continue;
     const returnType = match[1].trim();
@@ -226,7 +234,7 @@ function parseGlobalSection(globalSection, functions) {
     const escaped = funcName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     const headPattern = new RegExp('(void|int|long|bool|boolean|float|double|byte|char|String)\\s+' + escaped + '\\s*\\([^)]*\\)\\s*\\{');
     let match;
-    while ((match = section.match(headPattern)) !== null) {
+    while ((match = maskComments(section).match(headPattern)) !== null) {
       const start = match.index;
       const braceStart = match.index + match[0].length;
       let depth = 1;
@@ -293,11 +301,6 @@ function parseGlobalSection(globalSection, functions) {
 
   function maskDirectives(text) {
     return text.replace(/^[ \t]*#.*$/gm, match => ' '.repeat(match.length));
-  }
-  function maskComments(text) {
-    let t = text.replace(/\/\*[\s\S]*?\*\//g, match => ' '.repeat(match.length));
-    t = t.replace(/\/\/[^\n]*/g, match => ' '.repeat(match.length));
-    return t;
   }
   const maskedSection = maskComments(maskDirectives(section));
 
