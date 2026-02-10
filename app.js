@@ -92,7 +92,8 @@
       tr.innerHTML = '<td>' + escapeHtml(name) + '</td><td>' + escapeHtml(info.type || '') + '</td><td>' + escapeHtml(info.role || 'variable') + '</td><td>' + escapeHtml(info.alias || name) + '</td><td>' + escapeHtml(info.default != null ? String(info.default) : '') + '</td>';
       tr.dataset.type = 'variable';
       tr.dataset.key = name;
-      tr.addEventListener('dblclick', function () { openEditVariable(name, info, tr); });
+      // При повторном открытии берём актуальное состояние переменной из state, а не захваченное в замыкании
+      tr.addEventListener('dblclick', function () { openEditVariable(name, state.variables[name], tr); });
       varBody.appendChild(tr);
     });
     defines.forEach(function (d, idx) {
@@ -100,7 +101,8 @@
       tr.innerHTML = '<td>' + escapeHtml(d.name || '') + '</td><td>' + escapeHtml(d.type || 'String') + '</td><td>' + escapeHtml(d.role || 'global') + '</td><td>' + escapeHtml(d.name || '') + '</td><td>' + escapeHtml(d.value != null ? String(d.value) : '') + '</td>';
       tr.dataset.type = 'define';
       tr.dataset.key = String(idx);
-      tr.addEventListener('dblclick', function () { openEditDefine(idx, d, tr); });
+      // Также для #define всегда читаем актуальные данные из state
+      tr.addEventListener('dblclick', function () { openEditDefine(idx, state.defines[idx], tr); });
       varBody.appendChild(tr);
     });
   }
@@ -114,7 +116,8 @@
       var tr = document.createElement('tr');
       tr.innerHTML = '<td>' + escapeHtml(name) + '</td><td>' + escapeHtml(info.return_type || 'void') + '</td><td>' + escapeHtml(info.params || '(нет)') + '</td><td title="' + escapeAttr(info.body || '') + '">' + bodyPreview + '</td>';
       tr.dataset.funcName = name;
-      tr.addEventListener('dblclick', function () { openEditFunction(name, info, tr); });
+      // И для функций используем всегда текущее состояние в state
+      tr.addEventListener('dblclick', function () { openEditFunction(name, state.functions[name], tr); });
       funcBody.appendChild(tr);
     });
   }
