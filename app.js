@@ -8,12 +8,11 @@
   }
 
   const lastUpdatedEl = document.getElementById('lastUpdatedSpan');
-  if (lastUpdatedEl && document.lastModified) {
-    const d = new Date(document.lastModified);
-    if (!isNaN(d.getTime())) {
-      lastUpdatedEl.textContent = d.toLocaleString('ru-RU');
-    } else {
-      lastUpdatedEl.textContent = document.lastModified;
+  if (lastUpdatedEl) {
+    const source = (typeof LAST_UPDATED !== 'undefined' && LAST_UPDATED) ? LAST_UPDATED : document.lastModified;
+    if (source) {
+      const d = new Date(source);
+      lastUpdatedEl.textContent = !isNaN(d.getTime()) ? d.toLocaleString('ru-RU') : source;
     }
   }
 

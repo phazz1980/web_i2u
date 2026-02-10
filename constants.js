@@ -2,6 +2,8 @@
  * Константы ino2ubi — конвертер Arduino в блоки FLProg
  */
 const VERSION = '1.7.8';
+/** Дата последнего обновления (для GitHub Pages; обновлять при деплое) */
+const LAST_UPDATED = '2025-02-10';
 
 const PRIMITIVE_TYPES = new Set([
   'int', 'long', 'unsigned long', 'bool', 'boolean', 'float', 'double',
