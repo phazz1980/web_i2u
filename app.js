@@ -162,10 +162,10 @@
     modalEdit.hidden = false;
     modalSave.onclick = function () {
       var role = document.getElementById('editRole').value;
-      var alias = document.getElementById('editAlias').value.trim();
+      var alias = document.getElementById('editAlias').value;
       var def = document.getElementById('editDefault').value.trim();
-      if (!alias) { setStatus('Псевдоним не может быть пустым', true); return; }
-      if (!/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(alias)) { setStatus('Псевдоним: только буквы, цифры, подчёркивание', true); return; }
+      // Псевдоним может содержать любые символы, в том числе пробелы и русские буквы
+      if (!alias.trim()) { setStatus('Псевдоним не может быть пустым', true); return; }
       state.variables[name] = Object.assign({}, state.variables[name], { role: role, alias: alias, default: def || null });
       tr.cells[2].textContent = role;
       tr.cells[3].textContent = alias;
