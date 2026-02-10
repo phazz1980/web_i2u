@@ -1,0 +1,28 @@
+name: Update last updated date
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set LAST_UPDATED to current date
+        run: |
+          DATE=$(date -u +%Y-%m-%d)
+          sed -i "s/const LAST_UPDATED = '[^']*';/const LAST_UPDATED = '$DATE';/" constants.js
+
+      - name: Commit and push if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git diff --exit-code constants.js || {
+            git add constants.js
+            git commit -m "chore: set LAST_UPDATED to $(date -u +%Y-%m-%d)"
+            git push
+          }
