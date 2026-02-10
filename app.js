@@ -12,7 +12,20 @@
     const source = (typeof LAST_UPDATED !== 'undefined' && LAST_UPDATED) ? LAST_UPDATED : document.lastModified;
     if (source) {
       const d = new Date(source);
-      lastUpdatedEl.textContent = !isNaN(d.getTime()) ? d.toLocaleString('ru-RU') : source;
+      if (!isNaN(d.getTime())) {
+        // Отображаем в часовом поясе пользователя с указанием зоны
+        lastUpdatedEl.textContent = d.toLocaleString('ru-RU', {
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit',
+          timeZoneName: 'short'
+        });
+      } else {
+        lastUpdatedEl.textContent = source;
+      }
     }
   }
 

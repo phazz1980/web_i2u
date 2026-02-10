@@ -12,9 +12,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set LAST_UPDATED to current date
+      - name: Set LAST_UPDATED to current datetime (UTC)
         run: |
-          DATE=$(date -u +%Y-%m-%d)
+          DATE=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
           sed -i "s/const LAST_UPDATED = '[^']*';/const LAST_UPDATED = '$DATE';/" constants.js
 
       - name: Commit and push if changed
@@ -23,6 +23,6 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git diff --exit-code constants.js || {
             git add constants.js
-            git commit -m "chore: set LAST_UPDATED to $(date -u +%Y-%m-%d)"
+            git commit -m "chore: set LAST_UPDATED to $(date -u +%Y-%m-%dT%H:%M:%SZ)"
             git push
           }
