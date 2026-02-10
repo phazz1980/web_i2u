@@ -7,6 +7,16 @@
     if (el) el.textContent = VERSION;
   }
 
+  const lastUpdatedEl = document.getElementById('lastUpdatedSpan');
+  if (lastUpdatedEl && document.lastModified) {
+    const d = new Date(document.lastModified);
+    if (!isNaN(d.getTime())) {
+      lastUpdatedEl.textContent = d.toLocaleString('ru-RU');
+    } else {
+      lastUpdatedEl.textContent = document.lastModified;
+    }
+  }
+
   const codeInput = document.getElementById('codeInput');
   const fileIno = document.getElementById('fileIno');
   const btnLoad = document.getElementById('btnLoad');
