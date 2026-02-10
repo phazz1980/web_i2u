@@ -30,6 +30,16 @@ function escapeDescriptionForSixx(text) {
   return s;
 }
 
+// Убирает внешние кавычки из строкового значения (если они есть)
+function removeStringQuotes(value) {
+  if (typeof value !== 'string') return value;
+  const s = value.trim();
+  if ((s.startsWith('"') && s.endsWith('"')) || (s.startsWith("'") && s.endsWith("'"))) {
+    return s.slice(1, -1);
+  }
+  return s;
+}
+
 function findTopLevelEquals(str) {
   let paren = 0, bracket = 0, brace = 0;
   let inString = false, stringChar = '', escape = false;
@@ -199,9 +209,14 @@ function createUbiXmlSixx(
     let defaultVal = varInfo.type === 'String' ? (varInfo.default || '') : (varInfo.default || '0');
     if ((varInfo.type === 'bool' || varInfo.type === 'boolean') && ['true', '1'].includes(String(defaultVal).trim().toLowerCase())) defaultVal = '1';
     else if ((varInfo.type === 'bool' || varInfo.type === 'boolean')) defaultVal = '0';
+    // Для строковых параметров убираем внешние кавычки
+    if (varInfo.type === 'String') {
+      defaultVal = removeStringQuotes(String(defaultVal));
+    }
     paramsXml += '\t\t\t\t<sixx.object sixx.id="' + adaptorId + '" sixx.type="InputsOutputsAdaptorForUserBlock" sixx.env="Arduino" >\n';
     paramsXml += '\t\t\t\t\t<sixx.object sixx.id="' + paramId + '" sixx.name="object" sixx.type="UserBlockParametr" sixx.env="Arduino" >\n';
     paramsXml += '\t\t\t\t\t\t<sixx.object sixx.id="' + paramNameId + '" sixx.name="name" sixx.type="String" sixx.env="Core" >' + (varInfo.alias || name) + '</sixx.object>\n';
+    // Тип параметра как у FLProg-блока: простой StringDataType без \"class\" и instanceCollection
     paramsXml += createSixxDataTypeSimple(varInfo.type, paramTypeId);
     paramsXml += '\t\t\t\t\t\t<sixx.object sixx.name="hasDefaultValue" sixx.type="True" sixx.env="Core" />\n';
     if (varInfo.type === 'String') {
@@ -246,7 +261,11 @@ function createUbiXmlSixx(
     if (d.role === 'parameter') return;
     const declId = nextId(), defineId = nextId(), nameId = nextId(), lastPartId = nextId();
     const dName = String(d.name || '').trim();
-    const dValue = String(d.value || '').trim();
+    let dValue = String(d.value || '').trim();
+    // Для строковых значений убираем внешние кавычки
+    if (d.type === 'String') {
+      dValue = removeStringQuotes(dValue);
+    }
     declareXml += '\t\t\t\t\t<sixx.object sixx.id="' + declId + '" sixx.type="CodeUserBlockDeclareDefineBlock" sixx.env="Arduino" >\n';
     declareXml += '\t\t\t\t\t\t<sixx.object sixx.id="' + defineId + '" sixx.name="define" sixx.type="String" sixx.env="Core" >&#35;define</sixx.object>\n';
     declareXml += '\t\t\t\t\t\t<sixx.object sixx.id="' + nameId + '" sixx.name="name" sixx.type="String" sixx.env="Core" >' + escapeHtml(dName) + '</sixx.object>\n';
@@ -302,7 +321,11 @@ function createUbiXmlSixx(
 
   varsList.forEach(([varName, varInfo]) => {
     const declId = nextId(), declNameId = nextId(), declLastId = nextId(), declFirstId = nextId();
-    const defaultVal = varInfo.default;
+    let defaultVal = varInfo.default;
+    // Для строковых переменных убираем внешние кавычки
+    if (varInfo.type === 'String' && defaultVal != null) {
+      defaultVal = removeStringQuotes(String(defaultVal));
+    }
     const lastPart = defaultVal ? '= ' + escapeCodeForSixx(String(defaultVal).trim()) + ';' : ';';
     declareXml += '\t\t\t\t\t<sixx.object sixx.id="' + declId + '" sixx.type="CodeUserBlockDeclareStandartBlock" sixx.env="Arduino" >\n';
     declareXml += '\t\t\t\t\t\t<sixx.object sixx.id="' + declNameId + '" sixx.name="name" sixx.type="String" sixx.env="Core" >' + (varInfo.alias || varName || '').trim() + '</sixx.object>\n';
