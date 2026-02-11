@@ -3,7 +3,7 @@
  */
 const VERSION = '1.7.8';
 /** Дата последнего обновления (подставляется автоматически при push в main) */
-const LAST_UPDATED = '2026-02-10T19:06:06Z';
+const LAST_UPDATED = '2026-02-11T04:42:58Z';
 
 const PRIMITIVE_TYPES = new Set([
   'int', 'long', 'unsigned long', 'bool', 'boolean', 'float', 'double',
