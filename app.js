@@ -310,4 +310,11 @@
     var helpBackdrop = modalHelp.querySelector('.modal-backdrop');
     if (helpBackdrop) helpBackdrop.addEventListener('click', function () { modalHelp.hidden = true; });
   }
+
+  // Регистрация Service Worker для PWA (офлайн, установка)
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function () {
+      navigator.serviceWorker.register('./sw.js', { scope: './' }).catch(function () {});
+    });
+  }
 })();

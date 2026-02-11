@@ -1,0 +1,26 @@
+{
+  "name": "ino2ubi — конвертер Arduino в блоки FLProg",
+  "short_name": "ino2ubi",
+  "description": "Конвертер Arduino (.ino) в пользовательские блоки FLProg (.ubi). Работает в браузере, без сервера.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "theme_color": "#0f1419",
+  "background_color": "#0f1419",
+  "lang": "ru",
+  "icons": [
+    {
+      "src": "icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ]
+}
