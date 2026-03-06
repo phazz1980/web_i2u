@@ -316,8 +316,13 @@ function parseGlobalSection(globalSection, functions) {
       continue;
     }
 
-    const lineStart = section.lastIndexOf('\n', startIdx - 1) + 1;
-    let lineEnd = section.indexOf('\n', startIdx);
+    // Определяем строку исходного кода, к которой относится текущее объявление.
+    // Берём позицию самого объявления в "замаскированной" секции, чтобы корректно
+    // найти строку комментария (// in, // out, // par) без сдвига на соседнюю строку.
+    const stmtIndexInMasked = maskedSection.indexOf(statement, startIdx);
+    const anchorIdx = stmtIndexInMasked !== -1 ? stmtIndexInMasked : startIdx;
+    const lineStart = section.lastIndexOf('\n', anchorIdx) + 1;
+    let lineEnd = section.indexOf('\n', anchorIdx);
     if (lineEnd === -1) lineEnd = section.length;
     const lineText = section.slice(lineStart, lineEnd);
 
