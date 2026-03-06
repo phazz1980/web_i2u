@@ -307,10 +307,31 @@ function createUbiXmlSixx(
       firstPart = nameMatch ? leftSide.slice(0, nameMatch.index).trim() : leftSide;
       lastPart = '= ' + escapeCodeForSixx(valueSide) + ';';
     } else {
-      const nameMatch = stmt.match(/\b([A-Za-z_][A-Za-z0-9_]*)\s*$/);
-      namePart = nameMatch ? nameMatch[1] : '';
-      firstPart = nameMatch ? stmt.slice(0, nameMatch.index).trim() : stmt;
-      lastPart = ';';
+      // Обычный случай: ищем имя в конце выражения (varName; / objName;)
+      let nameMatch = stmt.match(/\b([A-Za-z_][A-Za-z0-9_]*)\s*$/);
+      if (nameMatch) {
+        namePart = nameMatch[1];
+        firstPart = stmt.slice(0, nameMatch.index).trim();
+        lastPart = ';';
+      } else {
+        // Особый случай: объявления объектов вида "Type Name(args...);"
+        // Например: U8G2_ST7920_128X64_1_HW_SPI u8g2(U8G2_R0, /* CS=*/ 10, /* reset=*/ 8);
+        const ctorMatch = stmt.match(/^\s*([A-Za-z_][A-Za-z0-9_:<>]*)\s+([A-Za-z_][A-Za-z0-9_]*)\s*\(/);
+        if (ctorMatch) {
+          const typeName = ctorMatch[1];
+          const varName = ctorMatch[2];
+          namePart = varName;
+          firstPart = typeName;
+          // Остаток вместе с аргументами конструктора
+          const rest = stmt.slice(ctorMatch[0].length - 1).trim(); // начинаем с '('
+          lastPart = rest ? escapeCodeForSixx(rest) + ';' : ';';
+        } else {
+          // Фолбэк: не смогли выделить имя — отдаём всё выражение в lastPart
+          namePart = '';
+          firstPart = '';
+          lastPart = escapeCodeForSixx(stmt) + ';';
+        }
+      }
     }
     declareXml += '\t\t\t\t\t<sixx.object sixx.id="' + declId + '" sixx.type="CodeUserBlockDeclareStandartBlock" sixx.env="Arduino" >\n';
     declareXml += '\t\t\t\t\t\t<sixx.object sixx.id="' + declNameId + '" sixx.name="name" sixx.type="String" sixx.env="Core" >' + escapeHtml(namePart) + '</sixx.object>\n';

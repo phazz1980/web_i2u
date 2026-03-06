@@ -285,7 +285,8 @@ function parseGlobalSection(globalSection, functions) {
     }
     const name = m[1];
     let rest = m[2].trim();
-    const role = /\b\/\/\s*par\b/.test(rest) ? 'parameter' : 'global';
+    // Маркер роли для #define ищем в комментарии на той же строке: // par
+    const role = /\/\/\s*par\b/.test(rest) ? 'parameter' : 'global';
     const value = rest.includes('//') ? rest.split('//')[0].trim() : rest;
     defines.push({ name, value, role, type: inferDefineType(value), position: lineOffset });
     lineOffset += line.length + 1;
@@ -307,17 +308,25 @@ function parseGlobalSection(globalSection, functions) {
   for (const [statement, startIdx] of splitStatements(maskedSection)) {
     const stmt = statement.trim();
     if (!stmt || stmt.startsWith('#')) continue;
-    if (/\w+\s*\([^)]*\)\s*$/.test(stmt) && !stmt.includes('=')) continue;
+    // Прототипы функций и объявления объектов вида Type Name(args);
+    // Раньше мы их просто пропускали, теперь сохраняем как extra_declarations,
+    // чтобы, например, строки вида "U8G2_ST7920_128X64_1_HW_SPI u8g2(...);" попадали в блок declare.
+    if (/\w+\s*\([^)]*\)\s*$/.test(stmt) && !stmt.includes('=')) {
+      extraDeclarations.push(stmt + ';');
+      continue;
+    }
 
     const lineStart = section.lastIndexOf('\n', startIdx - 1) + 1;
     let lineEnd = section.indexOf('\n', startIdx);
     if (lineEnd === -1) lineEnd = section.length;
     const lineText = section.slice(lineStart, lineEnd);
 
+    // Автоопределение роли переменной по комментарию на той же строке:
+    // // in, // out, // par
     let role = 'variable';
-    if (/\b\/\/\s*in\b/.test(lineText)) role = 'input';
-    else if (/\b\/\/\s*out\b/.test(lineText)) role = 'output';
-    else if (/\b\/\/\s*par\b/.test(lineText)) role = 'parameter';
+    if (/\/\/\s*in\b/.test(lineText)) role = 'input';
+    else if (/\/\/\s*out\b/.test(lineText)) role = 'output';
+    else if (/\/\/\s*par\b/.test(lineText)) role = 'parameter';
 
     const stmtNoQual = stmt.replace(/^\s*(?:(?:static|const|volatile)\s+)+/, '');
     const isStatic = /^\s*static\b/.test(stmt);
