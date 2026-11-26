@@ -346,6 +346,15 @@ function parseGlobalSection(globalSection, functions) {
         (isStatic ? staticDeclarations : extraDeclarations).push(stmt + ';');
         continue;
       }
+      // Массивы (uint16_t q[N];) и const-константы без маркера роли тоже кладём
+      // в declare как есть и в исходном порядке: массив может ссылаться на константу,
+      // а переменные в итоговом блоке идут после extra_declarations.
+      const isConst = /^\s*(?:(?:static|volatile)\s+)*const\b/.test(stmt);
+      const isArray = splitTopLevel(decls, ',').some(d => /\[/.test(splitInitializer(d)[0]));
+      if (!isStatic && (isArray || (isConst && role === 'variable'))) {
+        extraDeclarations.push(stmt + ';');
+        continue;
+      }
       if (isStatic) {
         splitTopLevel(decls, ',').forEach(decl => {
           const one = (decl || '').trim();
