@@ -157,7 +157,7 @@ function createUbiXmlSixx(
     inputsXml += '\t\t\t\t\t<sixx.object sixx.id="' + nameId + '" sixx.name="name" sixx.type="String" sixx.env="Core" >' + (varInfo.alias || varName) + '</sixx.object>\n';
     inputsXml += '\t\t\t\t\t<sixx.object sixx.name="isNot" sixx.type="False" sixx.env="Core" />\n';
     inputsXml += '\t\t\t\t\t<sixx.object sixx.id="' + idInObjId + '" sixx.name="id" sixx.type="String" sixx.env="Core" >' + idInObjUuid + '</sixx.object>\n';
-    inputsXml += '\t\t\t\t</sixx.object>\n\t\t\t\t<sixx.object sixx.id="' + commentId + '" sixx.name="comment" sixx.type="String" sixx.env="Core" ></sixx.object>\n';
+    inputsXml += '\t\t\t\t</sixx.object>\n\t\t\t\t<sixx.object sixx.id="' + commentId + '" sixx.name="comment" sixx.type="String" sixx.env="Core" >' + escapeHtml(varInfo.comment || '') + '</sixx.object>\n';
     inputsXml += '\t\t\t\t<sixx.object sixx.id="' + adaptorUuidId + '" sixx.name="id" sixx.type="String" sixx.env="Core" >' + adaptorUuid + '</sixx.object>\n';
     inputsXml += '\t\t\t</sixx.object>\n';
   });
@@ -179,7 +179,11 @@ function createUbiXmlSixx(
     outputsXml += '\t\t\t\t\t<sixx.object sixx.id="' + nameId + '" sixx.name="name" sixx.type="String" sixx.env="Core" >' + (varInfo.alias || varName) + '</sixx.object>\n';
     outputsXml += '\t\t\t\t\t<sixx.object sixx.name="isNot" sixx.type="False" sixx.env="Core" />\n';
     outputsXml += '\t\t\t\t\t<sixx.object sixx.name="nameCash" sixx.idref="' + nameId + '" />\n';
-    outputsXml += '\t\t\t\t</sixx.object>\n\t\t\t\t<sixx.object sixx.name="comment" sixx.idref="' + commentStrId + '" />\n';
+    if (varInfo.comment) {
+      outputsXml += '\t\t\t\t</sixx.object>\n\t\t\t\t<sixx.object sixx.id="' + nextId() + '" sixx.name="comment" sixx.type="String" sixx.env="Core" >' + escapeHtml(varInfo.comment) + '</sixx.object>\n';
+    } else {
+      outputsXml += '\t\t\t\t</sixx.object>\n\t\t\t\t<sixx.object sixx.name="comment" sixx.idref="' + commentStrId + '" />\n';
+    }
     outputsXml += '\t\t\t\t<sixx.object sixx.id="' + uuidObjId + '" sixx.name="id" sixx.type="String" sixx.env="Core" >' + outputUuid + '</sixx.object>\n';
     outputsXml += '\t\t\t</sixx.object>\n';
   });
@@ -197,7 +201,7 @@ function createUbiXmlSixx(
       paramsList.push({
         pos: d.position !== undefined ? d.position : 999999999,
         name: d.name,
-        info: { type: d.type || 'String', alias: d.name, default: d.value != null ? String(d.value) : '' }
+        info: { type: d.type || 'String', alias: d.name, default: d.value != null ? String(d.value) : '', comment: d.comment || '' }
       });
     }
   });
@@ -234,7 +238,7 @@ function createUbiXmlSixx(
     }
     paramsXml += '\t\t\t\t\t\t<sixx.object sixx.name="hasUpRange" sixx.type="False" sixx.env="Core" />\n';
     paramsXml += '\t\t\t\t\t\t<sixx.object sixx.name="hasDownRange" sixx.type="False" sixx.env="Core" />\n';
-    paramsXml += '\t\t\t\t\t\t<sixx.object sixx.id="' + commentId + '" sixx.name="comment" sixx.type="String" sixx.env="Core" ></sixx.object>\n';
+    paramsXml += '\t\t\t\t\t\t<sixx.object sixx.id="' + commentId + '" sixx.name="comment" sixx.type="String" sixx.env="Core" >' + escapeHtml(varInfo.comment || '') + '</sixx.object>\n';
     paramsXml += '\t\t\t\t\t\t<sixx.object sixx.id="' + uuidParamId + '" sixx.name="id" sixx.type="String" sixx.env="Core" >' + paramUuid + '</sixx.object>\n';
     paramsXml += '\t\t\t\t\t</sixx.object>\n\t\t\t\t\t<sixx.object sixx.id="' + uuidAdaptId + '" sixx.name="id" sixx.type="String" sixx.env="Core" >' + adaptUuid + '</sixx.object>\n';
     paramsXml += '\t\t\t\t</sixx.object>\n';
@@ -269,12 +273,15 @@ function createUbiXmlSixx(
     declareXml += '\t\t\t\t\t<sixx.object sixx.id="' + declId + '" sixx.type="CodeUserBlockDeclareDefineBlock" sixx.env="Arduino" >\n';
     declareXml += '\t\t\t\t\t\t<sixx.object sixx.id="' + defineId + '" sixx.name="define" sixx.type="String" sixx.env="Core" >&#35;define</sixx.object>\n';
     declareXml += '\t\t\t\t\t\t<sixx.object sixx.id="' + nameId + '" sixx.name="name" sixx.type="String" sixx.env="Core" >' + escapeHtml(dName) + '</sixx.object>\n';
-    declareXml += '\t\t\t\t\t\t<sixx.object sixx.id="' + lastPartId + '" sixx.name="lastPart" sixx.type="String" sixx.env="Core" >' + escapeHtml(dValue) + '</sixx.object>\n';
+    declareXml += '\t\t\t\t\t\t<sixx.object sixx.id="' + lastPartId + '" sixx.name="lastPart" sixx.type="String" sixx.env="Core" >' + escapeHtml(dValue) + (d.code_comment ? ' //' + escapeHtml(d.code_comment) : '') + '</sixx.object>\n';
     declareXml += '\t\t\t\t\t</sixx.object>\n';
   });
 
   (staticDeclarations || []).forEach(lineRaw => {
-    const line = (lineRaw || '').trim();
+    let line = (lineRaw || '').trim();
+    let extraComment = '';
+    const cm = line.match(/^([\s\S]*?;)[ \t]*\/\/([^\n]*)$/);
+    if (cm) { line = cm[1].trim(); extraComment = cm[2]; }
     if (!line.endsWith(';')) return;
     const stmt = line.slice(0, -1).trim();
     if (!/^\s*static\s+/.test(stmt)) return;
@@ -283,7 +290,8 @@ function createUbiXmlSixx(
     const firstPart = 'static ' + m[1].trim();
     const namePart = m[2];
     const rest = m[3].trim();
-    const lastPart = rest.startsWith('=') ? '= ' + escapeCodeForSixx(rest.slice(1).trim()) + ';' : ';';
+    const lastPart = (rest.startsWith('=') ? '= ' + escapeCodeForSixx(rest.slice(1).trim()) + ';' : ';')
+      + (extraComment ? ' //' + escapeCodeForSixx(extraComment) : '');
     const declId = nextId(), declNameId = nextId(), declLastId = nextId(), declFirstId = nextId();
     declareXml += '\t\t\t\t\t<sixx.object sixx.id="' + declId + '" sixx.type="CodeUserBlockDeclareStandartBlock" sixx.env="Arduino" >\n';
     declareXml += '\t\t\t\t\t\t<sixx.object sixx.id="' + declNameId + '" sixx.name="name" sixx.type="String" sixx.env="Core" >' + escapeHtml(namePart) + '</sixx.object>\n';
@@ -293,7 +301,10 @@ function createUbiXmlSixx(
   });
 
   (extraDeclarations || []).forEach(lineRaw => {
-    const line = (lineRaw || '').trim();
+    let line = (lineRaw || '').trim();
+    let extraComment = '';
+    const cm = line.match(/^([\s\S]*?;)[ \t]*\/\/([^\n]*)$/);
+    if (cm) { line = cm[1].trim(); extraComment = cm[2]; }
     if (!line.endsWith(';')) return;
     const stmt = line.slice(0, -1).trim();
     const declId = nextId(), declNameId = nextId(), declLastId = nextId(), declFirstId = nextId();
@@ -333,6 +344,7 @@ function createUbiXmlSixx(
         }
       }
     }
+    if (extraComment) lastPart += ' //' + escapeCodeForSixx(extraComment);
     declareXml += '\t\t\t\t\t<sixx.object sixx.id="' + declId + '" sixx.type="CodeUserBlockDeclareStandartBlock" sixx.env="Arduino" >\n';
     declareXml += '\t\t\t\t\t\t<sixx.object sixx.id="' + declNameId + '" sixx.name="name" sixx.type="String" sixx.env="Core" >' + escapeHtml(namePart) + '</sixx.object>\n';
     declareXml += '\t\t\t\t\t\t<sixx.object sixx.id="' + declLastId + '" sixx.name="lastPart" sixx.type="String" sixx.env="Core" >' + lastPart + '</sixx.object>\n';
@@ -347,7 +359,8 @@ function createUbiXmlSixx(
     if (varInfo.type === 'String' && defaultVal != null) {
       defaultVal = removeStringQuotes(String(defaultVal));
     }
-    const lastPart = defaultVal ? '= ' + escapeCodeForSixx(String(defaultVal).trim()) + ';' : ';';
+    const lastPart = (defaultVal ? '= ' + escapeCodeForSixx(String(defaultVal).trim()) + ';' : ';')
+      + (varInfo.code_comment ? ' //' + escapeCodeForSixx(varInfo.code_comment) : '');
     declareXml += '\t\t\t\t\t<sixx.object sixx.id="' + declId + '" sixx.type="CodeUserBlockDeclareStandartBlock" sixx.env="Arduino" >\n';
     declareXml += '\t\t\t\t\t\t<sixx.object sixx.id="' + declNameId + '" sixx.name="name" sixx.type="String" sixx.env="Core" >' + (varInfo.alias || varName || '').trim() + '</sixx.object>\n';
     declareXml += '\t\t\t\t\t\t<sixx.object sixx.id="' + declLastId + '" sixx.name="lastPart" sixx.type="String" sixx.env="Core" >' + lastPart + '</sixx.object>\n';

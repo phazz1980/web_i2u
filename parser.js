@@ -79,6 +79,28 @@ function extractLeadingComment(code) {
   return null;
 }
 
+// Текст однострочного комментария // ... (вне строк) или ''
+function lineCommentText(lineText) {
+  let inString = false, stringChar = '', escape = false;
+  for (let i = 0; i < lineText.length; i++) {
+    const ch = lineText[i];
+    if (inString) {
+      if (escape) escape = false;
+      else if (ch === '\\') escape = true;
+      else if (ch === stringChar) inString = false;
+      continue;
+    }
+    if (ch === '"' || ch === "'") { inString = true; stringChar = ch; continue; }
+    if (ch === '/' && lineText[i + 1] === '/') return lineText.slice(i + 2).trim();
+  }
+  return '';
+}
+
+// Текст после маркера роли: "in датчик двери" -> "датчик двери"
+function stripRoleMarker(comment) {
+  return comment.replace(/^(?:in|out|par)\b[\s:\-\u2014]*/i, '').trim();
+}
+
 function parseFunctionParams(paramsStr) {
   if (!paramsStr || !paramsStr.trim()) return [];
   const params = [];
@@ -288,7 +310,9 @@ function parseGlobalSection(globalSection, functions) {
     // Маркер роли для #define ищем в комментарии на той же строке: // par
     const role = /\/\/\s*par\b/.test(rest) ? 'parameter' : 'global';
     const value = rest.includes('//') ? rest.split('//')[0].trim() : rest;
-    defines.push({ name, value, role, type: inferDefineType(value), position: lineOffset });
+    const codeComment = lineCommentText(rest);
+    const comment = role === 'parameter' ? stripRoleMarker(codeComment) : '';
+    defines.push({ name, value, role, type: inferDefineType(value), position: lineOffset, comment, code_comment: codeComment });
     lineOffset += line.length + 1;
   });
 
@@ -308,14 +332,6 @@ function parseGlobalSection(globalSection, functions) {
   for (const [statement, startIdx] of splitStatements(maskedSection)) {
     const stmt = statement.trim();
     if (!stmt || stmt.startsWith('#')) continue;
-    // Прототипы функций и объявления объектов вида Type Name(args);
-    // Раньше мы их просто пропускали, теперь сохраняем как extra_declarations,
-    // чтобы, например, строки вида "U8G2_ST7920_128X64_1_HW_SPI u8g2(...);" попадали в блок declare.
-    if (/\w+\s*\([^)]*\)\s*$/.test(stmt) && !stmt.includes('=')) {
-      extraDeclarations.push(stmt + ';');
-      continue;
-    }
-
     // Определяем строку исходного кода, к которой относится текущее объявление.
     // Берём позицию самого объявления в "замаскированной" секции, чтобы корректно
     // найти строку комментария (// in, // out, // par) без сдвига на соседнюю строку.
@@ -325,6 +341,17 @@ function parseGlobalSection(globalSection, functions) {
     let lineEnd = section.indexOf('\n', anchorIdx);
     if (lineEnd === -1) lineEnd = section.length;
     const lineText = section.slice(lineStart, lineEnd);
+
+    const codeComment = lineCommentText(lineText);
+    const withComment = text => (codeComment ? text + ' //' + codeComment : text);
+
+    // Прототипы функций и объявления объектов вида Type Name(args);
+    // Раньше мы их просто пропускали, теперь сохраняем как extra_declarations,
+    // чтобы, например, строки вида "U8G2_ST7920_128X64_1_HW_SPI u8g2(...);" попадали в блок declare.
+    if (/\w+\s*\([^)]*\)\s*$/.test(stmt) && !stmt.includes('=')) {
+      extraDeclarations.push(withComment(stmt + ';'));
+      continue;
+    }
 
     // Автоопределение роли переменной по комментарию на той же строке:
     // // in, // out, // par
@@ -343,7 +370,7 @@ function parseGlobalSection(globalSection, functions) {
       // Указатели (uint16_t* p = nullptr;) не представимы как переменные —
       // сохраняем объявление как есть в блок declare.
       if (primitiveMatch[2].includes('*')) {
-        (isStatic ? staticDeclarations : extraDeclarations).push(stmt + ';');
+        (isStatic ? staticDeclarations : extraDeclarations).push(withComment(stmt + ';'));
         continue;
       }
       // Массивы (uint16_t q[N];) и const-константы без маркера роли тоже кладём
@@ -352,7 +379,7 @@ function parseGlobalSection(globalSection, functions) {
       const isConst = /^\s*(?:(?:static|volatile)\s+)*const\b/.test(stmt);
       const isArray = splitTopLevel(decls, ',').some(d => /\[/.test(splitInitializer(d)[0]));
       if (!isStatic && (isArray || (isConst && role === 'variable'))) {
-        extraDeclarations.push(stmt + ';');
+        extraDeclarations.push(withComment(stmt + ';'));
         continue;
       }
       if (isStatic) {
@@ -372,12 +399,14 @@ function parseGlobalSection(globalSection, functions) {
           default: valuePart,
           role,
           alias: varName,
+          comment: role === 'variable' ? '' : stripRoleMarker(codeComment),
+          code_comment: codeComment,
           position: startIdx
         };
       });
       continue;
     }
-    if (/^[A-Za-z_][A-Za-z0-9_:<>]*\s+.+$/s.test(stmt)) extraDeclarations.push(stmt + ';');
+    if (/^[A-Za-z_][A-Za-z0-9_:<>]*\s+.+$/s.test(stmt)) extraDeclarations.push(withComment(stmt + ';'));
   }
 
   return [variables, globalIncludes, defines, extraDeclarations, staticDeclarations];
