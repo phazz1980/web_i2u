@@ -211,7 +211,7 @@
       var role = document.getElementById('editDefineRole').value;
       if (!name) { setStatus('Имя не может быть пустым', true); return; }
       if (!/^[A-Za-z_][A-Za-z0-9_]*$/.test(name)) { setStatus('Имя: буквы, цифры, подчёркивание', true); return; }
-      state.defines[idx] = { name: name, value: value, type: type, role: role, position: d.position };
+      state.defines[idx] = { name: name, value: value, type: type, role: role, position: d.position, comment: d.comment, code_comment: d.code_comment };
       tr.cells[0].textContent = name;
       tr.cells[1].textContent = type;
       tr.cells[2].textContent = role;
@@ -301,6 +301,24 @@
     modalEdit.hidden = true;
   });
 
+  var modalAi = document.getElementById('modalAiPrompt');
+  var btnAi = document.getElementById('btnAiPrompt');
+  if (btnAi && modalAi) {
+    var aiText = document.getElementById('aiPromptText');
+    var aiCopy = document.getElementById('aiPromptCopy');
+    btnAi.addEventListener('click', function () {
+      if (aiText && typeof AI_PROMPT !== 'undefined') aiText.value = AI_PROMPT;
+      modalAi.hidden = false;
+    });
+    document.getElementById('aiPromptClose').addEventListener('click', function () { modalAi.hidden = true; });
+    modalAi.querySelector('.modal-backdrop').addEventListener('click', function () { modalAi.hidden = true; });
+    if (aiCopy) aiCopy.addEventListener('click', function () {
+      aiText.select();
+      var done = function () { aiCopy.textContent = 'Скопировано'; setTimeout(function () { aiCopy.textContent = 'Копировать'; }, 1500); };
+      if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(aiText.value).then(done, function () { document.execCommand('copy'); done(); });
+      else { document.execCommand('copy'); done(); }
+    });
+  }
   var modalHelp = document.getElementById('modalHelp');
   var btnHelp = document.getElementById('btnHelp');
   var modalHelpClose = document.getElementById('modalHelpClose');

@@ -106,3 +106,4 @@ body {
 .help-content pre { background: var(--bg); padding: 0.75rem; border-radius: 6px; font-size: 0.8rem; overflow-x: auto; margin: 0.5rem 0; }
 .help-content code { background: var(--surface2); padding: 0.1em 0.3em; border-radius: 4px; font-size: 0.85em; }
 .modal-help .modal-box { max-width: 560px; }
+.header-row > .header-buttons { flex: 0 0 auto; display: flex; gap: .5rem; flex-wrap: wrap; }
