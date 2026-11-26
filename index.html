@@ -24,7 +24,10 @@
           <p class="version">Версия <span id="versionSpan">—</span> (работает в браузере, без сервера)</p>
           <p class="version">Последнее обновление страницы: <span id="lastUpdatedSpan">—</span></p>
         </div>
-        <button type="button" id="btnHelp" class="btn btn-secondary" title="Справка по работе">Справка</button>
+        <div class="header-buttons">
+          <button type="button" id="btnAiPrompt" class="btn btn-secondary" title="Промпт для ИИ: как писать скетч для конвертера">Промпт для ИИ</button>
+          <button type="button" id="btnHelp" class="btn btn-secondary" title="Справка по работе">Справка</button>
+        </div>
       </div>
     </header>
 
@@ -153,6 +156,19 @@ int threshold = 100;  // par — параметр</pre>
     </div>
   </div>
 
+  <div id="modalAiPrompt" class="modal" hidden>
+    <div class="modal-backdrop"></div>
+    <div class="modal-box modal-help">
+      <h3>Промпт для ИИ</h3>
+      <p>Вставьте этот текст в чат с ИИ перед просьбой написать скетч: он научит писать код, который конвертер разберёт правильно.</p>
+      <textarea id="aiPromptText" rows="16" readonly style="width:100%"></textarea>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-secondary" id="aiPromptCopy">Копировать</button>
+        <button type="button" class="btn btn-primary" id="aiPromptClose">Закрыть</button>
+      </div>
+    </div>
+  </div>
+
   <div id="modalEdit" class="modal" hidden>
     <div class="modal-backdrop"></div>
     <div class="modal-box">
@@ -166,6 +182,7 @@ int threshold = 100;  // par — параметр</pre>
   </div>
 
   <script src="constants.js"></script>
+  <script src="ai-prompt.js"></script>
   <script src="parser.js"></script>
   <script src="generator.js"></script>
   <script src="app.js"></script>

@@ -1,13 +1,14 @@
 /**
  * Service Worker для PWA ino2ubi — кэширование для офлайн-работы
  */
-const CACHE_NAME = 'ino2ubi-v1';
+const CACHE_NAME = 'ino2ubi-v2';
 const ASSETS = [
   './',
   './index.html',
   './style.css',
   './app.js',
   './constants.js',
+  './ai-prompt.js',
   './parser.js',
   './generator.js',
   './manifest.json',
