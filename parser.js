@@ -3,7 +3,7 @@
  */
 const PRIMITIVE_TYPES_LIST = [...PRIMITIVE_TYPES].sort((a, b) => b.length - a.length);
 const PRIMITIVE_TYPE_REGEX = new RegExp(
-  '^(' + PRIMITIVE_TYPES_LIST.map(t => t.replace(/\s+/g, '\\s+')).join('|') + ')\\b\\s+(.+)$'
+  '^(' + PRIMITIVE_TYPES_LIST.map(t => t.replace(/\s+/g, '\\s+')).join('|') + ')\\b(\\s*\\*+\\s*|\\s+)(.+)$'
 );
 
 function maskComments(text) {
@@ -339,7 +339,13 @@ function parseGlobalSection(globalSection, functions) {
     const primitiveMatch = stmtNoQual.match(PRIMITIVE_TYPE_REGEX);
     if (primitiveMatch) {
       const varType = normalizeType(primitiveMatch[1]);
-      const decls = primitiveMatch[2].trim();
+      const decls = primitiveMatch[3].trim();
+      // Указатели (uint16_t* p = nullptr;) не представимы как переменные —
+      // сохраняем объявление как есть в блок declare.
+      if (primitiveMatch[2].includes('*')) {
+        (isStatic ? staticDeclarations : extraDeclarations).push(stmt + ';');
+        continue;
+      }
       if (isStatic) {
         splitTopLevel(decls, ',').forEach(decl => {
           const one = (decl || '').trim();
