@@ -1,0 +1,6 @@
+{
+  "name": "ino2ubi",
+  "version": "1.8.0",
+  "description": "Пишет Arduino-скетч по правилам конвертера и сразу выдаёт готовый пользовательский блок FLProg (.ubi)",
+  "license": "ISC"
+}

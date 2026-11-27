@@ -1,0 +1,11 @@
+{
+  "name": "ino2ubi",
+  "owner": { "name": "phazz1980" },
+  "plugins": [
+    {
+      "name": "ino2ubi",
+      "source": "./ino2ubi-plugin",
+      "description": "Скетч Arduino -> готовый блок FLProg (.ubi)"
+    }
+  ]
+}
